@@ -41,8 +41,33 @@ bundle exec rake redmine:plugins:migrate RAILS_ENV=production
 ## 🔧 Configuration
 
 - Go to Administration → Git Connector to configure global provider settings.
-- Add new providers (GitHub, GitLab, Bitbucket, etc.).
+- Add provider credentials:
+  - Provider: GitHub / GitLab / GitBucket
+  - Client ID: Your OAuth client ID
+  - Client Secret: Your OAuth client secret
 - Navigate to a project and configure repositories under Project Settings → Repositories.
+
+## Environment Variables
+
+The plugin requires the following environment variable:
+- APP_URL
+The base URL of your Redmine application.
+Example:
+
+```bash
+export APP_URL="https://redmine.example.com"
+```
+
+This is used when configuring OAuth callback URLs with Git providers.
+
+## Example OAuth Callback URLs
+
+When registering your Redmine instance with GitHub, GitLab, or GitBucket, set the OAuth redirect URI to:
+```bash
+https://your-redmine-domain.com/projects/oauth/callback
+```
+
+Replace https://your-redmine-domain.com with the value of ENV["APP_URL"].
 
 ## 🖥️ Usage
 
