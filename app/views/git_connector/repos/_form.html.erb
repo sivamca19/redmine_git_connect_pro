@@ -1,0 +1,32 @@
+<%= title [l(:label_project_plural), projects_path], 
+          [@project.name, project_path(@project)], 
+          [l(:label_repo_plural), git_connector_project_repos_path(@project)], 
+          (@repo.new_record? ? l(:label_repo_new) : l(:button_edit)) %>
+
+<%= error_messages_for @repo %>
+
+<%= form_with(model: [@project, @repo],
+              url: @repo.new_record? ? git_connector_project_repos_path(@project) : git_connector_project_repo_path(@project, @repo),
+              local: true,
+              class: "tabular") do |f| %>
+
+  <div class="box tabular">
+    <p>
+      <%= f.label :repo_name, l(:field_name) %><br>
+      <%= f.text_field :repo_name, size: 60 %>
+    </p>
+
+    <p>
+      <%= f.label :repo_url, l(:field_url) %><br>
+      <%= f.text_field :repo_url, size: 60 %>
+    </p>
+
+    <p>
+      <%= f.label :provider, l(:field_provider) %><br>
+      <%= f.select :provider,
+                   @providers.pluck(:provider, :provider).map { |p| [p.first.titleize, p.second] },
+                   include_blank: false %>
+    </p>
+  </div>
+  <%= f.submit(@repo.new_record? ? l(:button_create) : l(:button_save)) %>
+<% end %>

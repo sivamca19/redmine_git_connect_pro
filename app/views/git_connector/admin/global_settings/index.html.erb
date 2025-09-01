@@ -1,0 +1,28 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'git_connector', plugin: 'redmine_git_connect_pro' %>
+<% end %>
+
+<div class="contextual">
+  <%= link_to "Add New Provider", new_git_connector_admin_global_setting_path, class: "button" %>
+</div>
+<h2>Global Git Providers</h2>
+
+
+<table class="list">
+  <tr>
+    <th>Provider</th>
+    <th>Client ID</th>
+    <th>Actions</th>
+  </tr>
+  <% @providers.each do |p| %>
+    <tr>
+      <td><%= p.provider.titleize %></td>
+      <td><%= p.client_id %></td>
+      <td>
+        <%= link_to "Edit", edit_git_connector_admin_global_setting_path(p), class: 'icon icon-edit' %>
+        <%= link_to "Delete", git_connector_admin_global_setting_path(p), method: :delete, data: { confirm: "Are you sure?" } , class: 'icon icon-del' %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= javascript_include_tag 'git_connector_admin', plugin: 'redmine_git_connect_pro' %>

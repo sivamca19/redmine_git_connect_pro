@@ -1,0 +1,36 @@
+<%= title  ['Global Settings', git_connector_admin_global_settings_path], 
+          (@provider.new_record? ? l(:label_new_provider) : l(:label_edit_provider)) %>
+
+<%= error_messages_for(@provider)%>
+<%= form_with(model: @provider,
+              url: @provider.new_record? ? git_connector_admin_global_settings_path : git_connector_admin_global_setting_path(@provider),
+              local: true,
+              html: { class: "tabular" }) do |f| %>
+  <div class="box">
+    <p>
+      <%= f.label :provider, l(:field_provider) %>
+      <%= f.select :provider,
+                   GitConnector::GlobalSetting.providers.keys.map { |p| [p.titleize, p] },
+                   { include_blank: l(:label_select_provider) },
+                   class: "select" %>
+    </p>
+
+    <p>
+      <%= f.label :client_id, l(:field_client_id) %>
+      <%= f.text_field :client_id, class: "text" %>
+    </p>
+
+    <p>
+      <%= f.label :client_secret, l(:field_client_secret) %>
+      <%= f.password_field :client_secret, class: "text" %>
+    </p>
+
+    <p>
+      <%= f.label :base_url, l(:field_base_url) %>
+      <%= f.text_field :base_url, class: "text" %>
+      <em><%= l(:text_optional_base_url) %></em>
+    </p>
+  </div>
+  <%= f.submit l(:button_save), class: "button" %>
+<% end %>
+<%= javascript_include_tag 'git_connector_admin', plugin: 'redmine_git_connect_pro' %>

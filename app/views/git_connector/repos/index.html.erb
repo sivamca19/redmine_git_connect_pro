@@ -1,0 +1,72 @@
+<% extend SortHelper %>
+<div class="contextual">
+  <% if User.current.allowed_to?(:create, @project) %>
+    <p>
+      <%= link_to "Add New Repository", new_git_connector_project_repo_path(@project), class: "button" %>
+    </p>
+  <% end %>
+</div>
+<h2>Git Repositories</h2>
+
+<%= form_tag(git_connector_project_repos_path(@project), method: :get, class: "filters") do %>
+  <p>
+    <label for="name">Search:</label>
+    <%= text_field_tag :search, params[:search], size: 20 %>
+
+    <label for="provider">Provider:</label>
+    <%= select_tag :provider,
+          options_for_select([["All", ""], "GitHub", "GitLab", "Bitbucket"], params[:provider]) %>
+
+    <label for="status">Status:</label>
+    <%= select_tag :status,
+          options_for_select([["All", ""], ["Connected", "connected"], ["Not Connected", "disconnected"]], params[:status]) %>
+
+    <%= submit_tag "Apply", class: "small" %>
+    <%= link_to "Clear", git_connector_project_repos_path(@project), class: "icon icon-reload" %>
+  </p>
+<% end %>
+<table class="list">
+  <tr>
+    <%= sort_header_tag('repo_name', caption: "Name") %>
+    <th>URL</th>
+    <th>Provider</th>
+    <th>Status</th>
+    <th>Webhook</th>
+    <%= sort_header_tag('created_at', caption: 'Created At') %>
+    <th>Actions</th>
+  </tr>
+  <% @repos.each do |r| %>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= r.repo_name %></td>
+      <td><%= r.repo_url %></td>
+      <td><%= r.provider %></td>
+      <td><%= r.access_token.present? ? "Connected" : "Not Connected" %></td>
+      <td>
+        <% if User.current.allowed_to?(:"Enable / Disable Webhook", @project)  %>
+          <%= link_to r.webhook_active ? 'Disable' : 'Enable', git_connector_project_repo_toggle_webhook_path(@project, r), method: :patch %>
+        <% else %>
+          <%= r.webhook_active ? 'Enabled' : 'Disabled' %>
+        <% end %>
+      </td>
+      <td><%= format_time(r.created_at)%></td>
+      <td>
+        <% if User.current.allowed_to?(:edit, @project) %>
+          <%= link_to "Edit", edit_git_connector_project_repo_path(@project, r), class: 'icon icon-edit'%>
+        <% end %>
+        <% if User.current.allowed_to?(:authenticate, @project) %>
+          <% if r.access_token.blank? %>
+            <%= link_to "Connect", git_connector_project_repo_connect_path(@project, provider: r.provider, repo_id: r.id), class: 'icon icon-connect' %>
+          <% else %>
+            <%= link_to "Disconnect", git_connector_project_repo_disconnect_path(@project, provider: r.provider, repo_id: r.id), class: 'icon icon-disconnect' %>
+          <% end %>
+        <% end %>
+        <% if User.current.allowed_to?(:delete, @project) %>
+          <%= link_to "Delete", git_connector_project_repo_path(@project, r), method: :delete, class: 'icon icon-del', data: { confirm: "Are you sure?" }%>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= pagination_links_full(@repo_pages, @repo_count) %>
+
+<%= javascript_include_tag 'git_connector', plugin: 'redmine_git_connect_pro' %>
