@@ -57,7 +57,7 @@
           <% if r.access_token.blank? %>
             <%= link_to "Connect", git_connector_project_repo_connect_path(@project, provider: r.provider, repo_id: r.id), class: 'icon icon-connect' %>
           <% else %>
-            <%= link_to "Disconnect", git_connector_project_repo_disconnect_path(@project, provider: r.provider, repo_id: r.id), class: 'icon icon-disconnect' %>
+            <%= link_to "Disconnect", git_connector_project_repo_disconnect_path(@project, provider: r.provider, repo_id: r.id), class: 'icon icon-disconnect', method: :delete %>
           <% end %>
         <% end %>
         <% if User.current.allowed_to?(:delete, @project) %>

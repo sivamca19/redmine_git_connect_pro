@@ -8,13 +8,13 @@ module GitConnector
     include SortHelper
 
     before_action :find_project, except: [:oauth_callback]
-    before_action :authorize, except: [:connect, :oauth_callback]
+    before_action :authorize, except: [:connect, :oauth_callback, :disconnect]
     before_action :set_repo, only: [:edit, :update, :toggle_webhook, :disconnect]
 
     def index
-      sort_init 'name', 'asc'
+      sort_init 'repo_name', 'asc'
       sort_update(
-        'name'       => "#{Repo.table_name}.name",
+        'repo_name'       => "#{Repo.table_name}.repo_name",
         'created_at' => "#{Repo.table_name}.created_at",
         'updated_at' => "#{Repo.table_name}.updated_at"
       )
@@ -79,7 +79,7 @@ module GitConnector
 
     def disconnect
       @repo.update(access_token: nil, refresh_token: nil)
-      flash[:notice] = l(:notice_successful_disconnect)
+      flash[:notice] = l(:notice_successful_disconnect, provider: @repo.provider.titleize)
       redirect_to git_connector_project_repos_path(@project)
     end
 
@@ -209,13 +209,15 @@ module GitConnector
     end
 
     def oauth_callback_url
-      "http://localhost:3000/git_connector/projects/oauth/callback"
+      Rails.application.routes.url_helpers.git_connector_project_oauth_callback_url(
+        host: request.base_url
+      )
     end
 
     def webhook_callback_url(provider)
       Rails.application.routes.url_helpers.webhook_receive_url(
         provider,
-        host: ENV["APP_URL"]
+        host: request.base_url
       )
     end
 

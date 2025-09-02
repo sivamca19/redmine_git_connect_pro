@@ -12,3 +12,4 @@ en:
   field_repo_name: "Repository name"
   field_repo_url: "Repository URL"
   field_provider: "Provider"
+  notice_successful_disconnect: "Successfully disconnected from %{provider}."
