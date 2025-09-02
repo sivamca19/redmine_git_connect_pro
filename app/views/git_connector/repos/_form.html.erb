@@ -12,17 +12,17 @@
 
   <div class="box tabular">
     <p>
-      <%= f.label :repo_name, l(:field_name) %><br>
+      <%= f.label :repo_name, l(:field_name) %>
       <%= f.text_field :repo_name, size: 60 %>
     </p>
 
     <p>
-      <%= f.label :repo_url, l(:field_url) %><br>
+      <%= f.label :repo_url, l(:field_url) %>
       <%= f.text_field :repo_url, size: 60 %>
     </p>
 
     <p>
-      <%= f.label :provider, l(:field_provider) %><br>
+      <%= f.label :provider, l(:field_provider) %>
       <%= f.select :provider,
                    @providers.pluck(:provider, :provider).map { |p| [p.first.titleize, p.second] },
                    include_blank: false %>

@@ -42,7 +42,7 @@
       <td><%= r.provider %></td>
       <td><%= r.access_token.present? ? "Connected" : "Not Connected" %></td>
       <td>
-        <% if User.current.allowed_to?(:"Enable / Disable Webhook", @project)  %>
+        <% if User.current.allowed_to?("Enable / Disable Webhook", @project)  %>
           <%= link_to r.webhook_active ? 'Disable' : 'Enable', git_connector_project_repo_toggle_webhook_path(@project, r), method: :patch %>
         <% else %>
           <%= r.webhook_active ? 'Enabled' : 'Disabled' %>
