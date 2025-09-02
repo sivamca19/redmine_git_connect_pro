@@ -7,7 +7,15 @@ Redmine::Plugin.register :redmine_git_connect_pro do
   author_url 'https://github.com/sivamca19'
 
   # admin menu
-  menu :admin_menu, :git_connector, { controller: 'git_connector/admin/global_settings', action: 'index' }, caption: 'Git Connector', html: { class: 'icon icon-git' }
+  menu :admin_menu, :git_connector, { controller: 'git_connector/admin/global_settings', action: 'index' }, caption: %Q{
+    <svg xmlns="http://www.w3.org/2000/svg" class='s18 icon-svg' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+      <path d="M16 3h5v5"></path>
+      <path d="M8 21H3v-5"></path>
+      <path d="M21 3l-7.5 7.5"></path>
+      <path d="M3 21l7.5-7.5"></path>
+    </svg>
+    Git Connector
+  }.html_safe, html: { class: 'icon icon-git' }
   
   # project menu
   menu :project_menu, :git_connector, { controller: 'git_connector/repos', action: 'index' }, 
