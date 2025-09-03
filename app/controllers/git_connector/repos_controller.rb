@@ -60,8 +60,8 @@ module GitConnector
       service = build_webhook_service(@repo)
 
       if @repo.webhook_active?
-        service.deactivate_webhook(@repo.webhook_id, active: false)
-        @repo.update(webhook_active: false)
+        service.deactivate_webhook(@repo.webhook_id)
+        @repo.update(webhook_active: false, webhook_id: nil, webhook_secret: nil)
         flash[:notice] = l(:notice_webhook_deactivated)
       else
         activate_or_create_webhook(@repo, service)
@@ -157,7 +157,7 @@ module GitConnector
           webhook_active: true
         )
       else
-        service.activate_webhook(repo.webhook_id, active: true)
+        service.activate_webhook(repo.webhook_id)
         repo.update(webhook_active: true)
       end
     end
