@@ -72,13 +72,19 @@ class TicketUpdateService
     login = @data[:email].to_s.strip
     return User.anonymous if login.blank?
 
-    User.find_by(login: login) || create_user(login)
+    User.joins(:email_addresses)
+      .where("users.login = :login OR email_addresses.address = :login", login: login)
+      .where(email_addresses: { is_default: true })
+      .order("users.id DESC")
+      .first || create_user(login)
   end
 
   def create_user(login)
+    firstname = @data[:name].to_s.strip
+    firstname = firstname[0, 29].capitalize if firstname.present?
     User.create!(
       login: login,
-      firstname: login.capitalize,
+      firstname: firstname.presence || "Auto",
       lastname: "(auto)",
       mail: "#{login.parameterize}@autogen.local",
       language: Setting.default_language || "en",
