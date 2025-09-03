@@ -38,7 +38,7 @@ class TicketUpdateService
     commit_link = commit_url
     action      = case @event
                   when "push"          then "Commit pushed"
-                  when "pull_request"  then "Pull Request #{@data[:action]}"
+                  when "pull_request"  then "Pull Request #{@data[:merged] ? "merged" : @data[:action]}"
                   else "Update"
                   end
 

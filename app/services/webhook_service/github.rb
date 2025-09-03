@@ -30,7 +30,8 @@ module WebhookService
       {
         id: data["id"],
         secret: github_secret,
-        response: data
+        response: data,
+        success: res.code.to_i.between?(200, 299)
       }
     end
 
@@ -45,7 +46,8 @@ module WebhookService
       req.body = { active: active }.to_json
 
       res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
-      JSON.parse(res.body)
+      data = JSON.parse(res.body)
+      data.merge(success: res.code.to_i.between?(200, 299))
     end
 
     def activate_webhook(webhook_id)

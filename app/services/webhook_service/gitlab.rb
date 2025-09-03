@@ -24,7 +24,8 @@ module WebhookService
       {
         id: data["id"],
         secret: req.body[:token],
-        response: data
+        response: data,
+        success: res.code.to_i.between?(200, 299)
       }
     end
 

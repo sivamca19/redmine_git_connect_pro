@@ -26,7 +26,8 @@ module WebhookService
       {
         id: data["uuid"],
         secret: secret,
-        response: data
+        response: data,
+        success: res.code.to_i.between?(200, 299)
       }
     end
 

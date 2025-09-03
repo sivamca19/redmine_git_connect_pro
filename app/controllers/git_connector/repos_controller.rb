@@ -9,7 +9,7 @@ module GitConnector
 
     before_action :find_project, except: [:oauth_callback]
     before_action :authorize, except: [:connect, :oauth_callback, :disconnect]
-    before_action :set_repo, only: [:edit, :update, :toggle_webhook, :disconnect]
+    before_action :set_repo, only: [:edit, :update, :toggle_webhook, :disconnect, :destroy]
 
     def index
       sort_init 'repo_name', 'asc'
@@ -60,14 +60,15 @@ module GitConnector
       service = build_webhook_service(@repo)
 
       if @repo.webhook_active?
-        service.deactivate_webhook(@repo.webhook_id)
+        result = service.deactivate_webhook(@repo.webhook_id)
         @repo.update(webhook_active: false, webhook_id: nil, webhook_secret: nil)
-        flash[:notice] = l(:notice_webhook_deactivated)
+        message_key = result[:success] ? :notice_webhook_deactivated : :notice_webhook_not_deactivated
       else
-        activate_or_create_webhook(@repo, service)
-        flash[:notice] = l(:notice_webhook_activated)
+        result = activate_or_create_webhook(@repo, service)
+        message_key = result[:success] ? :notice_webhook_activated : :notice_webhook_not_activated
       end
 
+      flash[result[:success] ? :notice : :error] = l(message_key)
       redirect_to git_connector_project_repos_path(@project)
     end
 
@@ -98,6 +99,14 @@ module GitConnector
       )
 
       flash[:notice] = "#{provider.titleize} #{l(:notice_successful_connection)}"
+      redirect_to git_connector_project_repos_path(@project)
+    end
+
+    def destroy
+      service = build_webhook_service(@repo)
+      service.deactivate_webhook(@repo.webhook_id)
+      @repo.destroy
+      flash[:notice] = l(:notice_successful_delete)
       redirect_to git_connector_project_repos_path(@project)
     end
 
@@ -151,15 +160,27 @@ module GitConnector
     def activate_or_create_webhook(repo, service)
       if repo.webhook_id.blank?
         result = service.create_webhook
-        repo.update(
-          webhook_id:     result[:id],
-          webhook_secret: result[:secret],
-          webhook_active: true
-        )
+        if result[:success]
+          repo.update(
+            webhook_id:     result[:id],
+            webhook_secret: result[:secret],
+            webhook_active: true
+          )
+          message = 'successfully created'
+        else
+          repo.update(webhook_active: false)
+          message = 'failed to create'
+        end
       else
-        service.activate_webhook(repo.webhook_id)
-        repo.update(webhook_active: true)
+        result = service.activate_webhook(repo.webhook_id)
+        message = result[:success] ? 'successfully activated' : 'failed to activate'
+        repo.update(webhook_active: result["active"]) if result.is_a?(Hash)
       end
+
+      {
+        success: result[:success],
+        message: message
+      }
     end
 
     def oauth_url(provider, setting, repo_id:)
