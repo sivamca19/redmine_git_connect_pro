@@ -89,18 +89,18 @@ class TicketUpdateService
 
   def update_status(issue)
     return unless @event == "pull_request"
-
+    settings = Setting.plugin_redmine_git_connect_pro
     case @data[:action]
     when "opened"
-      in_progress = IssueStatus.find_by(name: "In Progress")
+      in_progress = IssueStatus.find_by(name: settings['status_opened'])
       issue.status = in_progress if in_progress
 
     when "closed"
       if @data[:merged]
-        resolved = IssueStatus.find_by(name: "Resolved")
+        resolved = IssueStatus.find_by(name: settings['status_closed_merged'])
         issue.status = resolved if resolved
       else
-        rejected = IssueStatus.find_by(name: "Rejected") || IssueStatus.find_by(name: "Closed")
+        rejected = IssueStatus.find_by(name: settings['status_closed_reopened'])
         issue.status = rejected if rejected
       end
     end

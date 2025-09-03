@@ -1,0 +1,17 @@
+<p>
+  <label>PR Opened → Issue Status</label>
+  <%= select_tag 'settings[status_opened]',
+        options_from_collection_for_select(IssueStatus.all, 'name', 'name', @settings['status_opened']) %>
+</p>
+
+<p>
+  <label>PR Closed (Merged) → Issue Status</label>
+  <%= select_tag 'settings[status_closed_merged]',
+        options_from_collection_for_select(IssueStatus.all, 'name', 'name', @settings['status_closed_merged']) %>
+</p>
+
+<p>
+  <label>PR Closed (Not Merged) → Issue Status</label>
+  <%= select_tag 'settings[status_closed_reopened]',
+        options_from_collection_for_select(IssueStatus.all, 'name', 'name', @settings['status_closed_reopened']) %>
+</p>

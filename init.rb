@@ -30,6 +30,12 @@ Redmine::Plugin.register :redmine_git_connect_pro do
     permission :authenticate, { 'git_connector/repos': [:connect]  }
     permission "Enable / Disable Webhook", { 'git_connector/repos': [:toggle_webhook]  }
   end
+
+  settings default: {
+    'status_opened' => 'In Progress',
+    'status_closed_merged' => 'Resolved',
+    'status_closed_reopened' => 'Reopened'
+  }, partial: 'settings/git_connector_settings'
 end
 require_relative 'lib/git_connector/hooks'
 require_relative 'lib/git_connector/project_patch'
